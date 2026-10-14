@@ -24,7 +24,7 @@ jobs:
           submodules: recursive # forge dependencies in lib/
       - uses: ss1738/protocol-guard-ci@v0.1.0 # pin to a tag or commit SHA
         with:
-          fail-on: high # use "none" for warning-only while you tune it
+          fail-on: high
           fuzz-runs: '1000'
           invariant-runs: '100'
         env:
