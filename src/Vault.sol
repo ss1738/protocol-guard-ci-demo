@@ -9,6 +9,7 @@ contract Vault {
     uint256 public totalDeposits;
     bool public paused;
     mapping(address => uint256) public balances;
+    uint256 public lastDepositAt;
 
     event Upgraded(address indexed implementation);
 
@@ -30,6 +31,7 @@ contract Vault {
         require(!paused, "paused");
         balances[msg.sender] += msg.value;
         totalDeposits += msg.value;
+        lastDepositAt = block.timestamp;
     }
 
     function withdraw(uint256 amount) external {
